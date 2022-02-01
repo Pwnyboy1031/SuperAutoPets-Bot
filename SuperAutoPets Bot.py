@@ -52,6 +52,7 @@ petDict = {
     "ability": "faint"
 }
 
+#resets the shop, updates the current gold, identifies the current shop and team
 def update():
     global currentShop
     currentShop = []
@@ -154,6 +155,7 @@ def check_Slot_Empty(x,y):
         print("Position is filled!") 
         return False
 
+#Checks if the round was a win, a loss, a tie, victory, or gameover
 def checkWin():
     if (pyautogui.locateOnScreen("victory.png", confidence= .9) != None):
         print("We won! :)")
@@ -171,7 +173,7 @@ def checkWin():
         print("We tied. :|")
     elif(pyautogui.locateOnScreen("gameover.png", confidence= .7) != None):
         print("Game over! X(")
-    else:print("WE WON! XD")
+    else:print("VICTORY! XD")
     pyautogui.click()
     time.sleep(2)
     pyautogui.moveTo(pos1x,shopy)
@@ -211,6 +213,7 @@ def findPetShop(pet,shopOrTeam):
         pyautogui.moveTo(pos1x+20,shopy+20)
     else: pyautogui.moveTo(pyautogui.locateCenterOnScreen(pet + ".png", confidence=.40, region=(450,320, 1000,200)))
 
+#returns pet name at position specified
 def identifyPet(x,y):
     TierList
     for pet in TierList:
@@ -291,8 +294,13 @@ def chooseNextAction():
     if Gold < 3:
         endTurn += 100
 
+    #end utility calculations
+
+    #Set decisions
     possibleDecisions = [buyAnt, buyFish, buyBeaver, buyDuck, buyHorse, buyMosquito, buyPig, buyOtter, buyCricket, buyItems, rollShop, endTurn, upgradePet,buyRandomPet]
     print(possibleDecisions)
+
+    #Compare decisions and execute the best one
 
     if max(possibleDecisions) == buyAnt:
         buy_pet(pos1x,"ant")

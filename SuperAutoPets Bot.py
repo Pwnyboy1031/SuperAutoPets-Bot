@@ -1,28 +1,31 @@
 
 from tabnanny import check
+from turtle import update
+from xml.dom.minidom import Element
+from xml.etree.ElementInclude import include
 import pyautogui
 import time
 import random
 import cv2
+import numpy
 
 
 pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 1.5
 
 #shop/team vertical coordinates
-teamy = 445
-shopy = 715
+teamy = 338
+shopy = 605 
 #Y coordinates to check if pets are empty
 #horizontal coordinates for play
-pos1x = 555
-pos2x = 690
-pos3x = 825
-pos4x = 960
-pos5x = 1095
+pos1x = 476
+pos2x = 620 
+pos3x = 753 
+pos4x = 890
+pos5x = 1026
 #items
-pos6x = 1230
-pos7x = 1365
-
+pos6x = 1160
+pos7x = 1293
 
 #Endturn Coordinates
 END_TURN_X = 1623
@@ -34,9 +37,27 @@ Turn = 1
 #Team Array
 Team = [pos1x,pos2x,pos3x,pos4x,pos5x]
 
+Squad = []
+currentShop = []
+
 #TierList
 TierList = ["fish","ant","beaver","mosquito","cricket","otter","horse","pig","duck"]
 
+#Pet Dictionary
+petDict = {
+    "pet": "ant.png",
+    "name": "ant",
+    "attack": 2,
+    "health": 1,
+    "ability": "faint"
+}
+
+def update():
+    global currentShop
+    currentShop = []
+    findGold()
+    identifyTeam()
+    identifyShop()
 
 #Start Countdown
 def start_countdown():
@@ -55,9 +76,8 @@ def buy_pet(position,pet):
     findPetShop(pet,"shop")
     pyautogui.click()
     #Buy pet at position
-    pyautogui.click(position,teamy)
-    global Gold
-    Gold -= 3
+    pyautogui.click(position+50,teamy)
+    findGold()
 
 def end_turn():
     global Turn
@@ -70,75 +90,27 @@ def end_turn():
     Turn += 1
     #Speed up game
     time.sleep(3)
-    pyautogui.click()
+    pyautogui.click(50,50)
     time.sleep(15)
+    checkWin()
 
-#Buys a completely random team
-def buyRandomTeam():
-    global Turn
-    i = 0
-    if Turn < 5:
-        while (i < 3):
-            selection = random.randint(1,3)
-            if selection == 1:
-                if (check_Slot_Empty(pos1x,shopy) != True):
-                    buy_pet(pos1x)
-                    print("Pet Purchased!")
-                    i += 1
-                else: print("No pet available")
-            elif selection == 2:
-                if (check_Slot_Empty(pos2x,shopy) != True):
-                    buy_pet(pos2x)
-                    print("Pet Purchased!")
-                    i += 1
-                else: print("No pet available")
-            elif selection == 3:
-                if (check_Slot_Empty(pos3x,shopy) != True):
-                    buy_pet(pos3x)
-                    print("Pet Purchased!")
-                    i += 1
-                else: print("No pet available")
-    elif Turn < 9:
-        for x in range(3):
-            selection = random.randint(1,5)
-            if selection == 1:
-                buy_pet(pos1x)
-            elif selection == 2:
-                buy_pet(pos2x)
-            elif selection == 3:
-                buy_pet(pos3x)
-            elif selection == 4:
-                buy_pet(pos4x)
-            else:
-                buy_pet(pos5x)
-
-#Buy best available pets buy tier
-def buyTeamByTier():
-    global Gold
-    global Team
-    if check_Slot_Empty(pos5x,teamy) == True:
-        for pet in TierList: 
-            buy_pet(pos5x, pet)
-            print("Finished checking Slot 1 for ", pet)
-    if check_Slot_Empty(pos4x,teamy) == True:
-        for pet in TierList: 
-            buy_pet(pos4x, pet)
-            print("Finished checking Slot 2 for ", pet)
-    if check_Slot_Empty(pos3x,teamy) == True:
-        for pet in TierList: 
-            buy_pet(pos3x, pet)
-            print("Finished checking Slot 3 for ", pet)
-    if check_Slot_Empty(pos2x,teamy) == True:
-        for pet in TierList: 
-            buy_pet(pos2x, pet)
-            print("Finished checking Slot 4 for ", pet)
-    if check_Slot_Empty(pos1x,teamy) == True:
-        for pet in TierList: 
-            buy_pet(pos1x, pet)
-            print("Finished checking Slot 5 for ", pet)
-
-    findGold()
-    buyItem()
+def upgradeTeamPet():
+    for pet in currentShop:
+        if pet == Squad[0]:
+            buy_pet(pos1x,pet)
+            break
+        elif pet == Squad[1]:
+            buy_pet(pos2x,pet)
+            break
+        elif pet == Squad[2]:
+            buy_pet(pos3x,pet)
+            break
+        elif pet == Squad[3]:
+            buy_pet(pos4x,pet)
+            break
+        elif pet == Squad[4]:
+            buy_pet(pos5x,pet)
+            break
 
 
 
@@ -176,7 +148,7 @@ def findGold():
 
 # Checks if the slot selected is empty
 def check_Slot_Empty(x,y):
-    if pyautogui.locateOnScreen("empty.png", region=(x-70,y-39,135,92,)) != None or pyautogui.pixelMatchesColor(x, y-30, (186, 178, 145))  == True:
+    if pyautogui.locateOnScreen("empty.png", region=(x,y,200,300,)) != None or pyautogui.pixelMatchesColor(x+75, y+100, (186, 178, 145))  == True:
         return True
     else: 
         print("Position is filled!") 
@@ -209,7 +181,7 @@ def buyItem():
     global Gold
     while (Gold >= 3):
         if check_Slot_Empty(pos7x,shopy) == False:
-            pyautogui.click(pos7x,shopy)
+            pyautogui.click(pos7x+10,shopy)
             selection = random.randint(1,5)
             if selection == 1:
                 pyautogui.click(pos1x,teamy)
@@ -231,35 +203,135 @@ def buyItem():
             findGold()
 
 
-#Looks for a specific pet in the shop
+#Looks for a specific pet in the shop, or buy first shop position
 def findPetShop(pet,shopOrTeam):
-    if shopOrTeam == "shop":
+    if shopOrTeam == "shop" and pet != "any":
         pyautogui.moveTo(pyautogui.locateCenterOnScreen(pet + ".png", confidence=.40, region=(450,600, 1000,200)))
+    elif pet == "any":
+        pyautogui.moveTo(pos1x+20,shopy+20)
     else: pyautogui.moveTo(pyautogui.locateCenterOnScreen(pet + ".png", confidence=.40, region=(450,320, 1000,200)))
+
+def identifyPet(x,y):
+    TierList
+    for pet in TierList:
+        if pyautogui.locateCenterOnScreen(pet + ".png", confidence=.40, region=(x,y, 200,250)) != None:
+            return(pet)
+
+def identifyShop():
+    for pos in Team:
+        currentShop.append(identifyPet(pos,shopy))
+
+def identifyTeam():
+    global Squad
+    Squad = []
+    for x in Team:
+        Squad.append(identifyPet(x,teamy))
+
+def chooseNextAction():
+    buyAnt = 0
+    buyFish = 0
+    buyBeaver = 0
+    buyDuck = 0
+    buyHorse = 0
+    buyMosquito = 0
+    buyPig = 0
+    buyOtter = 0
+    buyCricket = 0
+    buyItems = 0
+    rollShop = 0
+    endTurn = 0
+    upgradePet = 0
+    buyRandomPet = 0
+    possibleDecisions = []
+
+    
+    update()
+    print(Squad)
+    for pet in currentShop:
+        if pet == "ant":
+            buyAnt = buyAnt + 50
+        elif pet == "fish":
+            buyFish = buyFish + 51
+        elif pet == "beaver":
+            buyBeaver = buyBeaver + 35
+        elif pet == "duck":
+            buyDuck = buyDuck + 5
+        elif pet == "horse":
+            buyHorse = buyHorse + 10
+        elif pet == "mosquito":
+            buyMosquito = buyMosquito + 40
+        elif pet == "pig":
+            buyPig = buyPig + 7
+        elif pet == "otter":
+            buyOtter = buyOtter + 25
+        elif pet == "cricket": 
+            buyCricket = buyCricket + 30
+
+    #Check if upgrade is viable        
+    if None not in Squad:
+        for pet in currentShop:
+            if pet == Squad[0]:
+                upgradePet += 60
+            elif pet == Squad[1]:
+                upgradePet += 60
+            elif pet == Squad[2]:
+                upgradePet += 60
+            elif pet == Squad[3]:
+                upgradePet += 60
+            elif pet == Squad[4]:
+                upgradePet += 60
+    
+    if Gold > 3:
+        buyRandomPet += 20
+
+
+    if Gold > 3 and None not in Squad:
+        buyItems += 90
+    
+    if Gold < 3:
+        endTurn += 100
+
+    possibleDecisions = [buyAnt, buyFish, buyBeaver, buyDuck, buyHorse, buyMosquito, buyPig, buyOtter, buyCricket, buyItems, rollShop, endTurn, upgradePet,buyRandomPet]
+    print(possibleDecisions)
+
+    if max(possibleDecisions) == buyAnt:
+        buy_pet(pos1x,"ant")
+    elif max(possibleDecisions) == buyFish:
+        buy_pet(pos1x,"fish")
+    elif max(possibleDecisions) == buyBeaver:
+        buy_pet(pos1x,"beaver")
+    elif max(possibleDecisions) == buyDuck:
+        buy_pet(pos1x,"duck")
+    elif max(possibleDecisions) == buyHorse:
+        buy_pet(pos1x,"horse")
+    elif max(possibleDecisions) == buyMosquito:
+        buy_pet(pos1x,"mosquito")
+    elif max(possibleDecisions) == buyPig:
+        buy_pet(pos1x,"pig")
+    elif max(possibleDecisions) == buyOtter:
+        buy_pet(pos1x,"otter")
+    elif max(possibleDecisions) == buyCricket:
+        buy_pet(pos1x,"cricket")
+    #Items currently broken because of item particles
+    #elif max(possibleDecisions) == buyItems:
+    #    buyItem()
+    elif max(possibleDecisions) == endTurn:
+        end_turn()
+    elif max(possibleDecisions) == upgradePet:
+        upgradeTeamPet()
+    elif max(possibleDecisions) == buyRandomPet:
+        buy_pet(pos1x,"any")
 
 
 def main():
     pyautogui.FAILSAFE = True
     start_countdown()
-    while (pyautogui.locateOnScreen("gameover.png") == None):
-        #buyRandomTeam()
-        #findGold()
-        #buyItem()
-        #roll()
-        buyTeamByTier()
-        end_turn()
-        checkWin()
+    
+    while pyautogui.locateCenterOnScreen("gameover.png") == None:
+        chooseNextAction()
     
     
-   
     
-    
-
-
-    
-    
-
-
 if __name__ == "__main__":
     main()
 

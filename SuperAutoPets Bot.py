@@ -82,8 +82,8 @@ def buy_pet(position,pet):
 
 def sell_Pet(pet):
     #Choose pet
-    pyautogui.click(pyautogui.locateCenterOnScreen(pet + ".png", confidence = .4, region=(450,320, 1000,200)))
-    pyautogui.click(pyautogui.locateCenterOnScreen("sell.png", confidence = .9))
+    pyautogui.click(pyautogui.locateCenterOnScreen(pet + ".png", confidence = .40, region=(450,320, 1000,200)))
+    pyautogui.click(pyautogui.locateCenterOnScreen("sell.png", confidence = .8))
 
 def end_turn():
     global Turn
@@ -185,8 +185,6 @@ def checkWin():
     pyautogui.click()
 
 def buyItem():
-    global Gold
-    while (Gold >= 3):
         if check_Slot_Empty(pos7x,shopy) == False:
             pyautogui.click(pos7x+10,shopy)
             selection = random.randint(1,5)
@@ -206,7 +204,6 @@ def buyItem():
                 pyautogui.click(pos5x,teamy)
                 findGold()
         else: 
-            roll()
             findGold()
 
 
@@ -308,30 +305,29 @@ def chooseNextAction():
         
         
 
-    #Check if upgrade is viable ** Not working **
-    # if None not in Squad:
-    #     for pet in currentShop:
-    #         if pet == Squad[0]:
-    #             upgradePet += 60
-    #         elif pet == Squad[1]:
-    #             upgradePet += 60
-    #         elif pet == Squad[2]:
-    #             upgradePet += 60
-    #         elif pet == Squad[3]:
-    #             upgradePet += 60
-    #         elif pet == Squad[4]:
-    #             upgradePet += 60
+    #Check if upgrade is viable
+    if None not in Squad:
+        for pet in currentShop:
+            if pet == Squad[0]:
+                upgradePet += 60
+            elif pet == Squad[1]:
+                upgradePet += 60
+            elif pet == Squad[2]:
+                upgradePet += 60
+            elif pet == Squad[3]:
+                upgradePet += 60
+            elif pet == Squad[4]:
+                upgradePet += 60
 
-    #Check if sell is viable
-    if ("duck" or "pig" or "rat" or "otter" in Squad) and (Turn > 1) and (None not in Squad):
-        sellPet += 101
+    # #Check if sell is viable CURRENTLY BROKEN
+    # if (("duck" in Squad) or ("pig" in Squad) or ("rat" in Squad) or ("otter" in Squad)) and None not in Squad:
+    #     sellPet += 101
     
     if Gold > 3:
         buyRandomPet += 20
 
-
     if Gold > 3 and None not in Squad:
-        buyItems += 10
+        buyItems += 50
     
     if Gold < 3:
         endTurn += 100
@@ -339,8 +335,8 @@ def chooseNextAction():
     #end utility calculations
 
     #Set decisions
-    possibleDecisions = [buyAnt, buyFish, buyBeaver, buyDuck, buyHorse, buyMosquito, buyPig, buyOtter, buyCricket, buyItems, rollShop, endTurn, upgradePet, buyRandomPet,
-     sellPet]
+    possibleDecisions = [buyAnt, buyFish, buyBeaver, buyDuck, buyHorse, buyMosquito, buyPig, buyOtter, buyCricket, buyCrab, buyDodo, buyElephant, buyFlamingo, buyHedgehog,
+     buyPeacock, buyRat, buyShrimp, buySpider, buySwan, buyItems, rollShop, endTurn, upgradePet, buyRandomPet, sellPet]
     print(possibleDecisions)
 
     #Compare decisions and execute the best one
@@ -384,8 +380,8 @@ def chooseNextAction():
     elif max(possibleDecisions) == buySwan:
         buy_pet(pos1x,"swan")
     #Items currently broken because of item particles
-    #elif max(possibleDecisions) == buyItems:
-    #    buyItem()
+    elif max(possibleDecisions) == buyItems:
+        buyItem()
     elif max(possibleDecisions) == endTurn:
         end_turn()
     elif max(possibleDecisions) == upgradePet:
@@ -401,6 +397,10 @@ def chooseNextAction():
             sell_Pet("pig")
         elif "rat" in Squad: 
             sell_Pet("rat")
+    elif max(possibleDecisions) == rollShop:
+        roll()
+    else: end_turn()
+    
 
 
 def main():

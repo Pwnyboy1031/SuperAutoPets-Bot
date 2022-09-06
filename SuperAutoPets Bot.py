@@ -162,13 +162,13 @@ def check_Slot_Empty(x,y):
 
 #Checks if the round was a win, a loss, a tie, victory, or gameover
 def checkWin():
-    if (pyautogui.locateOnScreen("victory.png", confidence= .9) != None):
+    if (pyautogui.locateOnScreen("victory.png", confidence= .95) != None):
         print("We won! :)")
         pyautogui.click()
         time.sleep(2)
         pyautogui.moveTo(pos1x,shopy)
         pyautogui.click()
-    elif (pyautogui.locateOnScreen("defeat.png", confidence= .9) != None): 
+    elif (pyautogui.locateOnScreen("defeat.png", confidence= .85) != None): 
         print("We lost ! :(")
         pyautogui.click()
         time.sleep(2)

@@ -128,25 +128,25 @@ def roll():
 #Finds current gold count
 def findGold():
     global Gold
-    if (pyautogui.locateCenterOnScreen("10gold.png") != None):
+    if (pyautogui.locateCenterOnScreen("10gold.png", confidence= .9) != None):
         Gold = 10
-    elif (pyautogui.locateCenterOnScreen("9gold.png") != None):
+    elif (pyautogui.locateCenterOnScreen("9gold.png", confidence = .9) != None):
         Gold = 9
-    elif (pyautogui.locateCenterOnScreen("8gold.png") != None):
+    elif (pyautogui.locateCenterOnScreen("8gold.png", confidence = .9) != None):
         Gold = 8
-    elif (pyautogui.locateCenterOnScreen("7gold.png") != None):
+    elif (pyautogui.locateCenterOnScreen("7gold.png", confidence = .9) != None):
         Gold = 7
-    elif (pyautogui.locateCenterOnScreen("6gold.png") != None):
+    elif (pyautogui.locateCenterOnScreen("6gold.png", confidence = .9) != None):
         Gold = 6
-    elif (pyautogui.locateCenterOnScreen("5gold.png") != None):
+    elif (pyautogui.locateCenterOnScreen("5gold.png", confidence = .9) != None):
         Gold = 5
-    elif (pyautogui.locateCenterOnScreen("4gold.png") != None):
+    elif (pyautogui.locateCenterOnScreen("4gold.png", confidence = .9) != None):
         Gold = 4
-    elif (pyautogui.locateCenterOnScreen("3gold.png") != None):
+    elif (pyautogui.locateCenterOnScreen("3gold.png", confidence = .9) != None):
         Gold = 3
-    elif (pyautogui.locateCenterOnScreen("2gold.png") != None):
+    elif (pyautogui.locateCenterOnScreen("2gold.png", confidence = .9) != None):
         Gold = 2
-    elif (pyautogui.locateCenterOnScreen("1gold.png") != None):
+    elif (pyautogui.locateCenterOnScreen("1gold.png", confidence = .9) != None):
         Gold = 1
     else:
         Gold = 0

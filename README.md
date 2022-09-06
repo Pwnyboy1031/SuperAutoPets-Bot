@@ -9,7 +9,7 @@ This is a work in progress.
 If you're going to attempt to use this, be warned I haven't tested it on other systems. 
 
 Standard Pack only
-All cosmetics must be turned off
+I used the snowfield background to create the recognition models...I'll see about updating this to the default. 
 Fast Forward Factor set to 200%
 
 
